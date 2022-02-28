@@ -1,0 +1,10 @@
+# This is an example configuration. Please see README.MD
+
+[database]
+host = "172.16.0.200"
+username = "myuser"
+password = "mypassword"
+database = "paradise_profilerdaemon"
+
+[redis]
+host = "172.16.0.200"
