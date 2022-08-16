@@ -6,6 +6,8 @@ package me.aa07.profilerdaemon.database;
 
 import me.aa07.profilerdaemon.database.tables.Procs;
 import me.aa07.profilerdaemon.database.tables.Samples;
+import me.aa07.profilerdaemon.database.tables.SendmapsProcs;
+import me.aa07.profilerdaemon.database.tables.SendmapsSamples;
 
 
 /**
@@ -23,4 +25,14 @@ public class Tables {
      * The table <code>paradise_profilerdaemon.samples</code>.
      */
     public static final Samples SAMPLES = Samples.SAMPLES;
+
+    /**
+     * The table <code>paradise_profilerdaemon.sendmaps_procs</code>.
+     */
+    public static final SendmapsProcs SENDMAPS_PROCS = SendmapsProcs.SENDMAPS_PROCS;
+
+    /**
+     * The table <code>paradise_profilerdaemon.sendmaps_samples</code>.
+     */
+    public static final SendmapsSamples SENDMAPS_SAMPLES = SendmapsSamples.SENDMAPS_SAMPLES;
 }

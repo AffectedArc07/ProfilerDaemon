@@ -45,6 +45,31 @@ CREATE TABLE IF NOT EXISTS `samples` (
 
 -- Data exporting was unselected.
 
+-- Dumping structure for table paradise_profilerdaemon.sendmaps_procs
+CREATE TABLE IF NOT EXISTS `sendmaps_procs` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `procpath` varchar(512) NOT NULL,
+  PRIMARY KEY (`id`) USING BTREE,
+  UNIQUE KEY `procpath` (`procpath`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
+
+-- Data exporting was unselected.
+
+-- Dumping structure for table paradise_profilerdaemon.sendmaps_samples
+CREATE TABLE IF NOT EXISTS `sendmaps_samples` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `roundId` int(11) NOT NULL,
+  `sampleTime` datetime NOT NULL DEFAULT current_timestamp(),
+  `procId` bigint(20) NOT NULL,
+  `value` double DEFAULT NULL,
+  `calls` int(11) NOT NULL,
+  PRIMARY KEY (`id`) USING BTREE,
+  KEY `FK1_procId_sendmaps_procs.id` (`procId`) USING BTREE,
+  CONSTRAINT `FK_sendmaps_samples_sendmaps_procs` FOREIGN KEY (`procId`) REFERENCES `sendmaps_procs` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
+
+-- Data exporting was unselected.
+
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
 /*!40014 SET FOREIGN_KEY_CHECKS=IFNULL(@OLD_FOREIGN_KEY_CHECKS, 1) */;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

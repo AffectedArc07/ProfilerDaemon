@@ -6,8 +6,12 @@ package me.aa07.profilerdaemon.database;
 
 import me.aa07.profilerdaemon.database.tables.Procs;
 import me.aa07.profilerdaemon.database.tables.Samples;
+import me.aa07.profilerdaemon.database.tables.SendmapsProcs;
+import me.aa07.profilerdaemon.database.tables.SendmapsSamples;
 import me.aa07.profilerdaemon.database.tables.records.ProcsRecord;
 import me.aa07.profilerdaemon.database.tables.records.SamplesRecord;
+import me.aa07.profilerdaemon.database.tables.records.SendmapsProcsRecord;
+import me.aa07.profilerdaemon.database.tables.records.SendmapsSamplesRecord;
 
 import org.jooq.ForeignKey;
 import org.jooq.TableField;
@@ -30,10 +34,14 @@ public class Keys {
     public static final UniqueKey<ProcsRecord> KEY_PROCS_PRIMARY = Internal.createUniqueKey(Procs.PROCS, DSL.name("KEY_procs_PRIMARY"), new TableField[] { Procs.PROCS.ID }, true);
     public static final UniqueKey<ProcsRecord> KEY_PROCS_PROCPATH = Internal.createUniqueKey(Procs.PROCS, DSL.name("KEY_procs_procpath"), new TableField[] { Procs.PROCS.PROCPATH }, true);
     public static final UniqueKey<SamplesRecord> KEY_SAMPLES_PRIMARY = Internal.createUniqueKey(Samples.SAMPLES, DSL.name("KEY_samples_PRIMARY"), new TableField[] { Samples.SAMPLES.ID }, true);
+    public static final UniqueKey<SendmapsProcsRecord> KEY_SENDMAPS_PROCS_PRIMARY = Internal.createUniqueKey(SendmapsProcs.SENDMAPS_PROCS, DSL.name("KEY_sendmaps_procs_PRIMARY"), new TableField[] { SendmapsProcs.SENDMAPS_PROCS.ID }, true);
+    public static final UniqueKey<SendmapsProcsRecord> KEY_SENDMAPS_PROCS_PROCPATH = Internal.createUniqueKey(SendmapsProcs.SENDMAPS_PROCS, DSL.name("KEY_sendmaps_procs_procpath"), new TableField[] { SendmapsProcs.SENDMAPS_PROCS.PROCPATH }, true);
+    public static final UniqueKey<SendmapsSamplesRecord> KEY_SENDMAPS_SAMPLES_PRIMARY = Internal.createUniqueKey(SendmapsSamples.SENDMAPS_SAMPLES, DSL.name("KEY_sendmaps_samples_PRIMARY"), new TableField[] { SendmapsSamples.SENDMAPS_SAMPLES.ID }, true);
 
     // -------------------------------------------------------------------------
     // FOREIGN KEY definitions
     // -------------------------------------------------------------------------
 
     public static final ForeignKey<SamplesRecord, ProcsRecord> FK1_PROCID_PROCS_ID = Internal.createForeignKey(Samples.SAMPLES, DSL.name("FK1_procId_procs.id"), new TableField[] { Samples.SAMPLES.PROCID }, Keys.KEY_PROCS_PRIMARY, new TableField[] { Procs.PROCS.ID }, true);
+    public static final ForeignKey<SendmapsSamplesRecord, SendmapsProcsRecord> FK_SENDMAPS_SAMPLES_SENDMAPS_PROCS = Internal.createForeignKey(SendmapsSamples.SENDMAPS_SAMPLES, DSL.name("FK_sendmaps_samples_sendmaps_procs"), new TableField[] { SendmapsSamples.SENDMAPS_SAMPLES.PROCID }, Keys.KEY_SENDMAPS_PROCS_PRIMARY, new TableField[] { SendmapsProcs.SENDMAPS_PROCS.ID }, true);
 }

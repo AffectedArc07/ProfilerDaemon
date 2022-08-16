@@ -1,27 +1,28 @@
 package me.aa07.profilerdaemon.core;
 
 import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import java.util.ArrayList;
-import java.util.List;
 import me.aa07.profilerdaemon.core.database.DbCore;
-import me.aa07.profilerdaemon.core.models.ProcData;
 import me.aa07.profilerdaemon.core.models.ProfilerHolder;
-import me.aa07.profilerdaemon.database.Tables;
-import me.aa07.profilerdaemon.database.tables.records.ProcsRecord;
-import me.aa07.profilerdaemon.database.tables.records.SamplesRecord;
+import me.aa07.profilerdaemon.core.processors.ProcProcessor;
+import me.aa07.profilerdaemon.core.processors.SendmapsProcessor;
 import org.apache.logging.log4j.Logger;
 
 public class Worker {
     private ArrayList<String> queue;
-    private DbCore database;
     private Logger logger;
     private Object listLock;
     private Gson gson;
 
+    private ProcProcessor procProcessor;
+    private SendmapsProcessor sendmapsProcessor;
+
     public Worker(DbCore database, Logger logger) {
-        this.database = database;
         this.logger = logger;
+
+        procProcessor = new ProcProcessor(database, logger);
+        sendmapsProcessor = new SendmapsProcessor(database, logger);
+
         queue = new ArrayList<String>();
         listLock = new Object();
         gson = new Gson();
@@ -72,46 +73,14 @@ public class Worker {
     private void processEntry(String entry) {
         long start = System.currentTimeMillis();
         logger.info(String.format("Processing entry with size %s bytes", entry.length()));
+
         ProfilerHolder holder = gson.fromJson(entry, ProfilerHolder.class);
         logger.info(String.format("Round ID: %s | Profile size: %s bytes", holder.roundId, holder.profilerData.length()));
 
-        List<ProcData> proc_list = new Gson().fromJson(
-            holder.profilerData, new TypeToken<List<ProcData>>() {}.getType()
-        );
-
-        logger.info(String.format("Procs logged: %s", proc_list.size()));
-
-        for (ProcData procdata : proc_list) {
-            long proc_id = getProcId(procdata.name);
-            SamplesRecord sr = database.jooq().newRecord(Tables.SAMPLES);
-            sr.setRoundid(holder.roundId);
-            sr.setSampletime(database.now());
-            sr.setProcid(proc_id);
-            sr.setSelf(procdata.self);
-            sr.setTotal(procdata.total);
-            sr.setReal(procdata.real);
-            sr.setOver(procdata.over);
-            sr.setCalls(procdata.calls);
-            sr.store();
-        }
+        procProcessor.processData(holder);
+        sendmapsProcessor.processData(holder);
 
         long duration = System.currentTimeMillis() - start;
-        logger.info(String.format("Processing complete within %sms", duration));
-    }
-
-    // Gets the proc ID from the DB, inserting if necessary
-    private long getProcId(String procname) {
-        if (!database.jooq().fetchExists(database.jooq().select(Tables.PROCS.ID).from(Tables.PROCS).where(Tables.PROCS.PROCPATH.eq(procname)))) {
-            // We dont exist, make us
-            logger.info(String.format("%s did not exist in the DB. It does now.", procname));
-
-            ProcsRecord record = database.jooq().newRecord(Tables.PROCS);
-            record.setProcpath(procname);
-            record.store();
-            return record.getId();
-        }
-
-        // We do exist, just grab
-        return database.jooq().select(Tables.PROCS.ID).from(Tables.PROCS).where(Tables.PROCS.PROCPATH.eq(procname)).fetchOne().value1();
+        logger.info(String.format("All processing complete within %sms", duration));
     }
 }

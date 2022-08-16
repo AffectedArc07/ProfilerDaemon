@@ -8,4 +8,6 @@ public class ProfilerHolder {
     public int roundId;
     @SerializedName("profile_data")
     public String profilerData;
+    @SerializedName("sendmaps_data")
+    public String sendmapsData;
 }
